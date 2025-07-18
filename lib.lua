@@ -24,7 +24,7 @@ library.theme = {
     background = "rbxassetid://5553946656",
     tilesize = 90,
     cursor = true,
-    --cursorimg = "https://t0.rbxcdn.com/42f66da98c40252ee151326a82aab51f",
+    cursorimg = "rbxassetid://10104198910",
     backgroundcolor = Color3.fromRGB(20, 20, 20),
     tabstextcolor = Color3.fromRGB(240, 240, 240),
     bordercolor = Color3.fromRGB(60, 60, 60),
@@ -43,7 +43,7 @@ library.theme = {
     itemscolor2 = Color3.fromRGB(210, 210, 210)
 }
 
---[[if library.theme.cursor and Drawing then
+if library.theme.cursor and Drawing then
     local success = pcall(function() 
         library.cursor = Drawing.new("Image")
         library.cursor.Data = game:HttpGet(library.theme.cursorimg)
@@ -68,7 +68,7 @@ library.theme = {
     elseif not success and library.cursor then
         library.cursor:Remove()
     end
-end]]
+end
 
 function library:CreateWatermark(name, position)
     local gamename = marketplaceservice:GetProductInfo(game.PlaceId).Name
