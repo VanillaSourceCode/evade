@@ -1,9 +1,14 @@
 local WorkspacePlayers = game:GetService("Workspace").Game.Players;
-local Players = game:GetService('Players');
 local uis = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+
+local Players = game:GetService('Players');
 local localplayer = Players.LocalPlayer;
 local character = localplayer.Character or localplayer.CharacterAdded:Wait()
+
+local TeleportService = game:GetService("TeleportService")
+local PlaceId = game.PlaceId
+local JobId = game.JobId
 -- semicolon but cool :sunglasses:
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/VanillaSourceCode/evade/refs/heads/main/lib.lua"))()
@@ -65,6 +70,17 @@ end)
 World:AddButton('Remove Barriers', function()
     workspace.Game.Map.InvisParts:ClearAllChildren()
 end)
+
+World:AddButton('Rejoin', function()
+    if #Players:GetPlayers() <= 1 then
+    	localplayer:Kick("\nRejoining...")
+    	wait()
+    	TeleportService:Teleport(PlaceId, localplayer)
+	else
+    	TeleportService:TeleportToPlaceInstance(PlaceId, JobId, localplayer)
+	end
+end)
+
 
 EvadeSector:AddToggle('Auto Respawn', false, function(State)
     Settings.AutoRespawn = State
