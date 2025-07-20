@@ -332,7 +332,7 @@ end)
 task.spawn(function()
     while task.wait() do
         if Settings.AutoRespawn then
-             if localplayer.Character and localplayer.Character:GetAttribute("Downed") then
+             if localplayer.Character:GetAttribute("Downed") then
                 game:GetService("ReplicatedStorage").Events.Player.ChangePlayerMode:FireServer(true) -- respawn event
              end
         end
