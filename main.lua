@@ -3,6 +3,7 @@ local Players = game:GetService('Players');
 local uis = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local localplayer = Players.LocalPlayer;
+local character = localplayer.Character or localplayer.CharacterAdded:Wait()
 -- semicolon but cool :sunglasses:
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/VanillaSourceCode/evade/refs/heads/main/lib.lua"))()
@@ -14,6 +15,7 @@ Esp.Enabled = false
 local Window = Library:CreateWindow("☀️ Evade", Vector2.new(500, 300), Enum.KeyCode.RightShift)
 local Evade = Window:CreateTab("General")
 local AutoFarms = Window:CreateTab("Farms")
+local Local = Window:CreateTab("Player")
 local Gamee = Window:CreateTab("Game")
 local Configs = Window:CreateTab("Settings")
 
@@ -23,6 +25,8 @@ local Credits = Evade:CreateSector("Credits", "left")
 local Farms = AutoFarms:CreateSector("Farms", "left")
 local FarmStats = AutoFarms:CreateSector("Stats", "right")
 
+local Move = Local:CreateSector("Movement", "left")
+
 local World = Gamee:CreateSector("World", "left")
 
 getgenv().Settings = {
@@ -31,9 +35,8 @@ getgenv().Settings = {
     Downedplayeresp = false,
     AutoRespawn = false,
     TicketFarm = false,
-    Speed = 1,
-    Jump = 1,
-    reviveTime = 3,
+    TSpeed = false,
+    Speed = 2,
     DownedColor = Color3.fromRGB(255,0,0),
     PlayerColor = Color3.fromRGB(255,170,0),
 
@@ -59,6 +62,10 @@ World:AddButton('Full Bright', function()
     Game.Lighting.ClockTime = 12
 end)
 
+World:AddButton('Remove Barriers', function()
+    workspace.Game.Map.InvisParts:ClearAllChildren()
+end)
+
 EvadeSector:AddToggle('Auto Respawn', false, function(State)
     Settings.AutoRespawn = State
 end)
@@ -67,7 +74,7 @@ EvadeSector:AddButton('Respawn',function()
     game:GetService("ReplicatedStorage").Events.Player.ChangePlayerMode:FireServer(true) --new event respawn lol
 end)
 
-
+-- farm
 Farms:AddToggle('Money Farm', false, function(State)
     Settings.moneyfarm = State
 end)
@@ -80,7 +87,28 @@ Farms:AddToggle('Ticket Farm', false, function(State)
     Settings.TicketFarm = State
 end)
 
+--move
+Move:AddToggle('Speed Boost', false, function(State)
+    Settings.TSpeed = State
+end)
 
+local WalkSpeed = Move:AddSlider("Speed", 2, 2, 500, 1, function(Value)
+    Settings.Speed = Value
+end)
+
+Move:AddToggle('Fly', false, function(State)
+    if State then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CF-Trail/random/main/bypassedfly.lua"))()
+	else
+		for i, v in next, workspace:GetChildren() do
+			if v.IsA(v, "BasePart") and v.Name ~= "Terrain" then
+				v:Destroy()
+			end
+		end
+	end
+end)
+
+-- vis
 Visuals:AddToggle('Enable Esp', false, function(State)
     Esp.Enabled = State
 end)
@@ -121,7 +149,23 @@ Configs:CreateConfigSystem()
 
 local TypeLabelC5 = FarmStats:AddLabel('Auto Farm Stats')
 local DurationLabelC5 = FarmStats:AddLabel('Duration: 0')
---local TicketsLabelC5 = FarmStats:AddLabel('Total Tickets:'..localplayer:GetAttribute('Tickets'))
+
+local function lolkekspeed(Player)
+    local humanoid = Player.character:FindFirstChildOfClass("Humanoid")
+    local rootPart = Player.character:FindFirstChild("HumanoidRootPart")
+    local moveDirection = humanoid.MoveDirection
+    if moveDirection.Magnitude > 0 then
+        local newPosition = rootPart.Position + moveDirection * Settings.Speed
+        rootPart.CFrame = CFrame.new(newPosition, newPosition + moveDirection)
+    end
+end
+
+game:GetService("RunService").Stepped:Connect(function(_, deltaTime)
+    if Settings.TSpeed then
+        lolkekspeed(game.Players.LocalPlayer)
+    end
+end)
+
 
 local FindAI = function()
     for _,v in pairs(WorkspacePlayers:GetChildren()) do
@@ -153,11 +197,6 @@ local revive = function()
                     --game:GetService("ReplicatedStorage").Events.Revive.RevivePlayer:FireServer(tostring(downedplr), false)
                     game:GetService("ReplicatedStorage").Events.Character.Interact:FireServer("Revive", nil, tostring(downedplr))
                     game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Character"):WaitForChild("Interact"):FireServer("Revive",true,tostring(downedplr))
-                    task.wait(4.5)
-                    game:GetService("ReplicatedStorage").Events.Character.Interact:FireServer("Revive", nil, tostring(downedplr))
-                                        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Character"):WaitForChild("Interact"):FireServer("Revive",true,tostring(downedplr))
-                    game:GetService("ReplicatedStorage").Events.Character.Interact:FireServer("Revive", nil, tostring(downedplr))
-                                        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Character"):WaitForChild("Interact"):FireServer("Revive",true,tostring(downedplr))
                     break
                 end
             end
